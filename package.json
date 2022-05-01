@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adecsijo/prf-kotprog-server.git"
+  },
+  "author": "Nora Nasz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adecsijo/prf-kotprog-server/issues"
+  },
+  "homepage": "https://github.com/adecsijo/prf-kotprog-server#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "engines": {
+    "node": "16.13"
+  }
+}
