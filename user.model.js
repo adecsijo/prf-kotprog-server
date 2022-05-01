@@ -27,6 +27,12 @@ userSchema.pre('save', function(next) {
   } else {
     return next();
   }
-})
+});
 
-mongoose.model('users', userSchema);
+userSchema.methods.comparePasswords = function(password, nx) {
+  bcrypt.compare(password, this.password, function(err, isMatch) {
+    nx(err, isMatch);
+  });
+}
+
+mongoose.model('user', userSchema);

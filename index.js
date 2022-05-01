@@ -4,6 +4,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const expressSession = require('express-session');
+
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -20,12 +24,39 @@ mongoose.connection.on('error', (err) => {
 })
 
 require('./user.model');
+const userModel = mongoose.model('user');
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({}));
 
 app.use(cors());
+
+passport.use('local', new localStrategy(function(username, password, done) {
+  userModel.findOne({username: username}, function(err, user) {
+      if(err) return done('Hiba a lekérés során', null);
+      if(!user) return done('Nincs ilyen felhasznaló', null);
+      user.comparePasswords(password, function(error, isMatch) {
+          if(error) return done(error, false);
+          if(!isMatch) return done('Hibás jelszó', false);
+          return done(null, user);
+      });
+  });
+}));
+
+passport.serializeUser(function(user, done) {
+  if(!user) return done('Nincs megadva beléptethető felhasználó');
+  return done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  if(!user) return done('Nincs kiléptethető felhasználó', null);
+  return done(null, user);
+});
+
+app.use(expressSession({secret: 'prf-kotprog2022', resave: true}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
   res.send('Hello world!');

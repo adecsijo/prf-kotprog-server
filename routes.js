@@ -1,7 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const userModel = mongoose.model('users');
+const userModel = mongoose.model('user');
+const passport = require('passport');
+
+router.route('/login').post((req, res, next) => {
+  if(req.body.username && req.body.password) {
+    passport.authenticate('local', function(error, user) {
+      if(error) return res.status(500).send({error: error});
+      req.logIn(user, function(error) {
+        if(error) return res.status(500).send({error: error});
+        return res.status(200).send('Sikeres bejelentkezés!')
+      })
+    })(req, res);
+  } else {
+    return res.status(400).send('Sikeres bejelentkezés!');
+  }
+});
+
+router.route('/logout').post((req, res, next) => {
+  if(req.isAuthenticated) {
+    req.logOut();
+    return res.status(200).send('Sikeres kijelentkezés!');
+  } else {
+    return res.status(403).send('Sikertelen kijelentkezés, nincs bejelentkezett felhasználó!');
+  }
+});
 
 router.route('/user').get((req, res, next) => {
   userModel.find({}, (err, users) => {
@@ -28,9 +52,10 @@ router.route('/user').get((req, res, next) => {
       if(err) return res.status(500).send('DB hiba!');
       if(user) {
         user.password = req.body.password;
+        if(req.isAuthenticated && req.session.passport.user.accessLevel == 'admin') user.accessLevel = req.body.accessLevel;
         user.save((error) => {
-          if(error) return res.status(500).send('Probléma a jelszó módosítás során!');
-          return res.status(200).send('Sikeres jelszó módosítás!');
+          if(error) return res.status(500).send('Probléma a módosítás során!');
+          return res.status(200).send('Sikeres módosítás!');
         })
       } else {
         return res.status(500).send('Nincs ilyen felhasználó az adatbázisban!');
