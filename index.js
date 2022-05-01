@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express'); 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -20,9 +20,8 @@ mongoose.connection.on('error', (err) => {
 })
 
 require('./user.model');
-const userModel = mongoose.model('users');
 
-app.use(cookieParser);
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({}));
 
@@ -39,5 +38,5 @@ app.use((req, res, next) => {
 })
 
 app.listen(port, () => {
-  console.log('The server is running!');
+  console.log('The server is running! Port: ' + port);
 })
