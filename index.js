@@ -24,6 +24,8 @@ mongoose.connection.on('error', (err) => {
 })
 
 require('./user.model');
+require('./book.model');
+require('./cart.model');
 const userModel = mongoose.model('user');
 
 app.use(cookieParser());
@@ -57,10 +59,6 @@ passport.deserializeUser(function(user, done) {
 app.use(expressSession({secret: 'prf-kotprog2022', resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.get('/', (req, res) => {
-  res.send('Hello world!');
-})
 
 app.use('/', require('./routes'));
 
