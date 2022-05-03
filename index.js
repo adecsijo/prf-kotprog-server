@@ -32,7 +32,22 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json({}));
 
-app.use(cors());
+const whitelist = ['https://<project_id>.web.app', 'http://localhost:4200'];
+
+var corsOptions = {
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 
+    'Origin', 'Accept']
+  };
+
+app.use(cors(corsOptions));
 
 passport.use('local', new localStrategy(function(username, password, done) {
   userModel.findOne({username: username}, function(err, user) {
