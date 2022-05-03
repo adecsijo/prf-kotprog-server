@@ -52,8 +52,8 @@ router.route('/user').get((req, res, next) => {
   }
 }).put((req, res, next) => {
   if (req.isAuthenticated()) {
-    if (req.body.username && req.body.password) {
-      userModel.findOne({ username: req.body.username }, (err, user) => {
+    if (req.body.password) {
+      userModel.findOne({ username: req.session.passport.user.username }, (err, user) => {
         if (err) return res.status(500).send({ msg: 'DB hiba' });
         if (user) {
           user.password = req.body.password;

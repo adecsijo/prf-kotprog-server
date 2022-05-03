@@ -1,4 +1,4 @@
-const express = require('express'); 
+const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -29,49 +29,50 @@ require('./cart.model');
 const userModel = mongoose.model('user');
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({}));
 
-const whitelist = ['https://<project_id>.web.app', 'http://localhost:4200'];
+const whitelist = ['https://prf-kotprog-client.herokuapp.com', 'http://localhost:4200'];
 
 var corsOptions = {
-    origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1 || !origin) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    },
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 
-    'Origin', 'Accept']
-  };
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin',
+    'Origin', 'Accept'
+  ]
+};
 
 app.use(cors(corsOptions));
 
 passport.use('local', new localStrategy(function(username, password, done) {
-  userModel.findOne({username: username}, function(err, user) {
-      if(err) return done('Hiba a lekérés során', null);
-      if(!user) return done('Nincs ilyen felhasznaló', null);
-      user.comparePasswords(password, function(error, isMatch) {
-          if(error) return done(error, false);
-          if(!isMatch) return done('Hibás jelszó', false);
-          return done(null, user);
-      });
+  userModel.findOne({ username: username }, function(err, user) {
+    if (err) return done('Hiba a lekérés során', null);
+    if (!user) return done('Nincs ilyen felhasznaló', null);
+    user.comparePasswords(password, function(error, isMatch) {
+      if (error) return done(error, false);
+      if (!isMatch) return done('Hibás jelszó', false);
+      return done(null, user);
+    });
   });
 }));
 
 passport.serializeUser(function(user, done) {
-  if(!user) return done('Nincs megadva beléptethető felhasználó');
+  if (!user) return done('Nincs megadva beléptethető felhasználó');
   return done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  if(!user) return done('Nincs kiléptethető felhasználó', null);
+  if (!user) return done('Nincs kiléptethető felhasználó', null);
   return done(null, user);
 });
 
-app.use(expressSession({secret: 'prf-kotprog2022', resave: true}));
+app.use(expressSession({ secret: 'prf-kotprog2022', resave: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
